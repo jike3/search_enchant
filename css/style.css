@@ -1,0 +1,170 @@
+#SpecialEnchant label, #NormalEnchant label, #incremental_result label {
+  flex-basis: 185px;
+  margin: 2px;
+  padding-left: 5px;
+  border: 1px solid gray;
+}
+
+#allofequip label {
+  flex-basis: 215px;
+  margin: 2px;
+  padding-left: 5px;
+  border: 1px solid gray;
+}
+
+body {
+  background-color: #FF9800;
+}
+
+header.uk-container-small {
+  background-color: #FFFFFF;
+  max-width: 980px;
+}
+
+#container {
+  background-color: #FFFFFF;
+  max-width: 980px;
+  min-height: 800px;
+  height: auto;
+}
+
+#NormalEnchant, #SpecialEnchant {
+  margin-bottom: 20px;
+}
+
+#NormalEnchant > form > input {
+  width: 500px;
+}
+
+.enchantname {
+  margin: 0 0.3em;
+  font-size: 0.9em;
+}
+
+#position label {
+  margin-right: 15px;
+}
+
+#position label:nth-child(odd){
+  width: 135px;
+}
+
+#position {
+  width: 300px;
+}
+
+#search {
+  background-color: #ececec;
+}
+
+#searchbox {
+  height: 60px;
+}
+
+#incremental_result {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+}
+
+#incremental_result label {
+  display: none;
+}
+
+#allofenchants, #option {
+  margin: 10px auto;
+}
+
+#allofenchants a, #option a, #allofequip a {
+  padding: 5px 5px 5px 15px;
+  border: 1px solid lightgray;
+}
+
+.found {
+  font-weight: bold;
+}
+
+.found > div {
+  font-weight: normal;
+}
+
+.notfound {
+  color: lightgray;
+}
+
+.target {
+  color: red;
+}
+
+.equippment_category {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+
+button.ajax {
+  font-size: 1.5em;
+}
+
+.searchbutton {
+  text-align: center;
+  margin: 20px auto;
+}
+
+#result {
+  width: 800px;
+  margin: 0 auto;
+  margin-top: 15px;
+}
+
+.uk-search-navbar {
+  width: 600px;
+  margin: 50px auto 40px;
+  display: block;
+}
+
+#scroll_to_top {
+  position: fixed;
+  bottom: 40px;
+  right: 20px;
+  z-index: 5;
+}
+
+.notice {
+  width: 300px;
+  height: 5em;
+  margin: 50px auto;
+  font-size: 1.2em;
+}
+
+#loading {
+  width: 300px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 1.5em;
+}
+
+#loading > div {
+  margin: 15px auto;
+}
+
+footer {
+  width: 980px;
+  text-align: center;
+  padding: 3rem 40px 4rem;
+  margin: 0 auto;
+  background-color: #FFFFFF;
+}
+
+#equip_search {
+  width: 95%;
+}
+
+#equip_search input.uk-search-input {
+  background-color: #ececec;
+}
+
+div#equip_result {
+  width: 95%;
+  margin: 20px auto 0 auto;
+}

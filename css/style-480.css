@@ -1,0 +1,30 @@
+header, main, footer {
+  width: 90%;
+}
+
+header {
+  margin: 0 auto ;
+  padding-top: 2%;
+}
+
+h1 {
+  font-size: 1.8em;
+}
+
+#result {
+  width: 100%;
+}
+
+footer {
+  padding: 2% 5%;
+}
+
+#option a {
+  text-align: center;
+  padding-left: 10%;
+}
+
+#scroll_to_top {
+  padding: 0 10px;
+
+}
