@@ -30,7 +30,7 @@
   }
 
   require '/usr/home/jike/conf/connection.php';
-
+  
   try {
 
     $pdo = new PDO(DSN, USER, PASSWORD,[PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]);
@@ -140,10 +140,11 @@
         } elseif ($ek === 'category') {
         } elseif ($ek === 'position') {
         } else {
-          if ($ev != null) {
+          if ($ev !== null) {
             $ev = $enchantdict[$ev];
           }
-          if (($ev != null && in_array($search,$ev)) || ($ev != null && !empty($equip))) { //検索されたエンチャント名があった場合はfoundをtrueにする（第1にあっても第2第3にあるとは限らないため）
+          //$searchは半角スペースが除去されているので$evも除去する必要がある
+          if ($ev !== null && (in_array($search,str_replace(' ','',$ev)) || !empty($equip))){
             $itemdata[$ek]['found'] = true;
           }
         }

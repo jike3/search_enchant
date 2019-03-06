@@ -1,6 +1,5 @@
 <?php
   require '/usr/home/jike/conf/connection.php';
-
   try {
 
     $pdo = new PDO(DSN, USER, PASSWORD,[PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]);
@@ -166,6 +165,6 @@
       </div>
     </footer>
 
-    <script src="main.js?2019012218543"></script>
+    <script src="main.js?201903062328"></script>
   </body>
 </html>

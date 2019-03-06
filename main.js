@@ -99,7 +99,7 @@ $('.ajax').on('click',function(){
     })
     .then(
       function(data) {
-        console.log(data);
+        //console.log(data);
         $('#result').empty();
         var fragment = document.createDocumentFragment();
         var item = data;
