@@ -80,11 +80,12 @@ $('.ajax').on('click',function(){
     $('#result').append('<div class="notice">エンチャントを選択してください</div>');
   } else {
 
-    if ($('[name="enchant"][type=radio]:checked').val() == undefined) {
-      var enchant = $('[name="enchant"][type=radio]:checked').val();
-    } else {
-      var enchant = $('[name="enchant"][type=radio]:checked').val().replace(/ /g,'');
-    }
+    var enchant = $('[name="enchant"][type=radio]:checked').val();
+    // if ($('[name="enchant"][type=radio]:checked').val() == undefined) {
+    //   var enchant = $('[name="enchant"][type=radio]:checked').val();
+    // } else {
+    //   var enchant = $('[name="enchant"][type=radio]:checked').val();//.replace(/ /g,'');
+    // }
 
     var equip = $('[name="equip"][type=radio]:checked').val();
 
