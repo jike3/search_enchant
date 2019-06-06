@@ -8,7 +8,7 @@
     $result = $stmt->fetchAll();
     $normal = $pdo->query('SELECT rodb_enchants.enchant_id, rodb_itemname.itemname AS enchant_name, rodb_enchants.reading, rodb_enchants.effect FROM rodb_enchants INNER JOIN rodb_itemname ON rodb_enchants.enchant_id = rodb_itemname.itemid WHERE special = "0"')->fetchAll();
     $special = $pdo->query('SELECT rodb_enchants.enchant_id, rodb_itemname.itemname AS enchant_name, rodb_enchants.reading, rodb_enchants.effect FROM rodb_enchants INNER JOIN rodb_itemname ON rodb_enchants.enchant_id = rodb_itemname.itemid WHERE special = "1"')->fetchAll();
-    $equip = $pdo->query('SELECT en.itemid, name.itemname, name.reading, slot.slot FROM rodb_can_enchant_items AS en INNER JOIN rodb_itemname AS name ON en.itemid = name.itemid INNER JOIN rodb_slot AS slot ON en.itemid = slot.itemid')->fetchAll();
+    $equip = $pdo->query('SELECT en.itemid, name.itemname, name.reading, slot.slot FROM rodb_can_enchant_items AS en INNER JOIN rodb_itemname AS name ON en.itemid = name.itemid LEFT JOIN rodb_slot AS slot ON en.itemid = slot.itemid')->fetchAll();
   } catch (PDOException $e) {
     exit('FAILED'. $e->getMessage());
   }
@@ -137,7 +137,11 @@
                   <?php foreach ($equip as $equipdata): ?>
                     <label style="display:none;">
                       <span style="display:none;"><?=h($equipdata['reading'])?></span>
+                      <?php if($equipdata['slot'] == NULL): ?>
+                      <input class="uk-radio <?=h($equipdata['itemid'])?>" type="radio" name="equip" value="<?=h($equipdata['itemid'])?>"> <?=h($equipdata['itemname']).' [0]'?>
+                      <?php else: ?>
                       <input class="uk-radio <?=h($equipdata['itemid'])?>" type="radio" name="equip" value="<?=h($equipdata['itemid'])?>"> <?=h($equipdata['itemname']).' ['.h($equipdata['slot']).']'?>
+                      <?php endif; ?>
                     </label>
                   <?php endforeach; ?>
                   </div>
@@ -165,6 +169,6 @@
       </div>
     </footer>
 
-    <script src="main.js?201903062328"></script>
+    <script src="main.js?201905262312"></script>
   </body>
 </html>
