@@ -1,21 +1,62 @@
 <?php
+
   require '/usr/home/jike/conf/connection.php';
   try {
 
-    $pdo = new PDO(DSN, USER, PASSWORD,[PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]);
+    $pdo = new PDO(
+      DSN, USER, PASSWORD, [
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false
+      ]
+    );
 
-    $stmt = $pdo->query('SELECT * FROM rodb_enchants');
-    $result = $stmt->fetchAll();
-    $normal = $pdo->query('SELECT rodb_enchants.enchant_id, rodb_itemname.itemname AS enchant_name, rodb_enchants.reading, rodb_enchants.effect FROM rodb_enchants INNER JOIN rodb_itemname ON rodb_enchants.enchant_id = rodb_itemname.itemid WHERE special = "0"')->fetchAll();
-    $special = $pdo->query('SELECT rodb_enchants.enchant_id, rodb_itemname.itemname AS enchant_name, rodb_enchants.reading, rodb_enchants.effect FROM rodb_enchants INNER JOIN rodb_itemname ON rodb_enchants.enchant_id = rodb_itemname.itemid WHERE special = "1"')->fetchAll();
-    $equip = $pdo->query('SELECT en.itemid, name.itemname, name.reading, slot.slot FROM rodb_can_enchant_items AS en INNER JOIN rodb_itemname AS name ON en.itemid = name.itemid LEFT JOIN rodb_slot AS slot ON en.itemid = slot.itemid')->fetchAll();
+    # エンチャントの表を作るために id・名前・よみがな・効果を取得する 通常 -> 特殊で名前昇順に並べる
+    $enchants = $pdo->query('
+      SELECT
+        rodb_enchants.enchant_id,
+        rodb_itemname.itemname AS enchant_name,
+        rodb_enchants.reading,
+        rodb_enchants.effect,
+        special
+      FROM
+        rodb_enchants
+      INNER JOIN
+        rodb_itemname
+      ON
+        rodb_enchants.enchant_id = rodb_itemname.itemid
+      ORDER BY
+        special, enchant_name
+    ')->fetchAll();
+    
+    # 装備一覧（スロット数付き）のための id・名前・よみがな・スロット
+    $equip = $pdo->query('
+      SELECT
+        en.itemid,
+        name.itemname,
+        name.reading,
+        slot.slot
+      FROM
+        rodb_can_enchant_items AS en
+      INNER JOIN
+        rodb_itemname AS name
+      ON
+        en.itemid = name.itemid
+      LEFT JOIN
+        rodb_slot AS slot
+      ON
+        en.itemid = slot.itemid
+      ')->fetchAll();
+
   } catch (PDOException $e) {
     exit('FAILED'. $e->getMessage());
   }
+
   $equip_position = ['頭上段','頭中段','頭下段','鎧','武器','盾','肩にかける物','靴','アクセサリー'];
+
   function h($str) {
     return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
   }
+
 ?>
 <!DOCTYPE html>
 <html lang="ja" dir="ltr">
@@ -58,99 +99,99 @@
           <input id="searchbox" class="uk-search-input" type="search" placeholder="エンチャント名を入力">
         </div>
 
-          <div id="incremental_result">
-            <div class="uk-flex uk-flex-wrap">
-              <?php foreach ($normal as $Nencha): ?>
-                <label<?php if ($Nencha['effect'] != NULL):?><?=' title="'.h($Nencha['effect']).'"'?><?php endif; ?>>
-                  <span style="display:none;"><?=h($Nencha['reading'])?></span>
-                  <input class="uk-radio <?=h($Nencha['enchant_id'])?>" type="radio" name="enchant" value="<?=h($Nencha['enchant_name'])?>"> <?=h($Nencha['enchant_name'])?>
-                </label>
-              <?php endforeach; ?>
-              <?php foreach ($special as $Sencha): ?>
-                <label<?php if ($Sencha['effect'] != NULL):?><?=' title="'.h($Sencha['effect']).'"'?><?php endif; ?>>
-                  <span style="display:none;"><?=h($Sencha['reading'])?></span>
-                  <input class="uk-radio <?=h($Sencha['enchant_id'])?>" type="radio" name="enchant" value="<?=h($Sencha['enchant_name'])?>"> <?=h($Sencha['enchant_name'])?>
-                </label>
-              <?php endforeach; ?>
-            </div>
+        <div id="incremental_result">
+          <div class="uk-flex uk-flex-wrap">
+            <!-- 全エンチャント（インクリメンタルサーチ用） -->
+            <?php foreach ($enchants as $enchant): ?>
+              <label<?php if ($enchant['effect'] != NULL):?><?=' title="'.h($enchant['effect']).'"'?><?php endif; ?>>
+                <span style="display:none;"><?=h($enchant['reading'])?></span>
+                <input class="uk-radio <?=h($enchant['enchant_id'])?>" type="radio" name="enchant" value="<?=h($enchant['enchant_name'])?>"> <?=h($enchant['enchant_name'])?>
+            <?php endforeach; ?>
           </div>
-          <div id="allofenchants" uk-accordion>
-            <div>
-              <a class="uk-accordion-title uk-text-small" href="#">すべてのエンチャントから選ぶ</a>
-              <div class="uk-accordion-content">
+        </div>
 
-                <div id="NormalEnchant" class="enchadata">
-                  <div class="catehead uk-heading-bullet">通常エンチャント</div>
-                  <div class="uk-flex uk-flex-wrap" id="Nencha">
-                    <?php foreach ($normal as $Nencha): ?>
-                      <label<?php if ($Nencha['effect'] != NULL):?><?=' title="'.h($Nencha['effect']).'"'?><?php endif; ?>>
-                        <span style="display:none;"><?=h($Nencha['reading'])?></span>
-                        <input class="uk-radio i<?=h($Nencha['enchant_id'])?>" type="radio" name="enchant" value="<?=h($Nencha['enchant_name'])?>"> <?=h($Nencha['enchant_name'])?>
+        <div id="allofenchants" uk-accordion>
+          <div>
+            <a class="uk-accordion-title uk-text-small" href="#">すべてのエンチャントから選ぶ</a>
+            <div class="uk-accordion-content">
+
+              <div id="NormalEnchant" class="enchadata">
+                <div class="catehead uk-heading-bullet">通常エンチャント</div>
+                <div class="uk-flex uk-flex-wrap" id="Nencha">
+                  <?php foreach ($enchants as $enchant): ?>
+                    <?php if ($enchant['special'] === 0): ?>
+                      <label<?php if ($enchant['effect'] != NULL):?><?=' title="'.h($enchant['effect']).'"'?><?php endif; ?>>
+                        <span style="display:none;"><?=h($enchant['reading'])?></span>
+                        <input class="uk-radio i<?=h($enchant['enchant_id'])?>" type="radio" name="enchant" value="<?=h($enchant['enchant_name'])?>"> <?=h($enchant['enchant_name'])?>
                       </label>
-                    <?php endforeach; ?>
-                  </div>
-                </div>
-
-                <div id="SpecialEnchant" class="enchadata">
-                  <div class="catehead uk-heading-bullet">特殊エンチャント</div>
-                  <div class="uk-flex uk-flex-wrap" id="Sencha">
-                    <?php foreach ($special as $Sencha): ?>
-                      <label<?php if ($Sencha['effect'] != NULL):?><?=' title="'.h($Sencha['effect']).'"'?><?php endif; ?>>
-                        <span style="display:none;"><?=h($Sencha['reading'])?></span>
-                        <input class="uk-radio i<?=h($Sencha['enchant_id'])?>" type="radio" name="enchant" value="<?=h($Sencha['enchant_name'])?>"> <?=h($Sencha['enchant_name'])?>
-                      </label>
-                    <?php endforeach; ?>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          <div id="option" uk-accordion>
-            <div>
-              <a class="uk-accordion-title uk-text-small" href="#">オプション</a>
-              <div class="uk-accordion-content">
-                <div class="catehead uk-heading-bullet">部位</div>
-                <div id="position" class="uk-flex uk-flex-wrap uk-margin-small-left">
-                  <?php foreach ($equip_position as $position): ?>
-                    <label><input class="uk-checkbox" type="checkbox" name="position[]" value="<?=h($position)?>"> <?=h($position)?></label>
+                    <?php endif ?>
                   <?php endforeach; ?>
                 </div>
-                <!--<div>装備可能職業</div>
-                <div id="equippable_jobs" class="uk-flex uk-flex-wrap">
-                  <label><input class="uk-checkbox" type="checkbox"> AB</label>
-                </div>-->
+              </div>
+
+              <div id="SpecialEnchant" class="enchadata">
+                <div class="catehead uk-heading-bullet">特殊エンチャント</div>
+                <div class="uk-flex uk-flex-wrap" id="Sencha">
+                  <?php foreach ($enchants as $enchant): ?>
+                    <?php if ($enchant['special'] === 1): ?>
+                      <label<?php if ($enchant['effect'] != NULL):?><?=' title="'.h($enchant['effect']).'"'?><?php endif; ?>>
+                        <span style="display:none;"><?=h($enchant['reading'])?></span>
+                        <input class="uk-radio i<?=h($enchant['enchant_id'])?>" type="radio" name="enchant" value="<?=h($enchant['enchant_name'])?>"> <?=h($enchant['enchant_name'])?>
+                      </label>
+                    <?php endif ?>
+                  <?php endforeach; ?>
+                </div>
               </div>
             </div>
           </div>
-          <div id="allofequip" uk-accordion>
-            <ul uk-accordion="multiple: true">
-              <div>
-                <a class="uk-accordion-title uk-text-small" href="#">すべての装備から選ぶ</a>
-                <div class="uk-accordion-content">
-                  <div id="equip_search" class="uk-search uk-search-default uk-margin-left">
-                    <span uk-search-icon></span>
-                    <input id="equip_searchbox" class="uk-search-input" type="search" placeholder="装備名を入力">
-                  </div>
-                  <div id="equip_result" class="uk-flex uk-flex-wrap">
-                  <?php foreach ($equip as $equipdata): ?>
-                    <label style="display:none;">
-                      <span style="display:none;"><?=h($equipdata['reading'])?></span>
-                      <?php if($equipdata['slot'] == NULL): ?>
-                      <input class="uk-radio <?=h($equipdata['itemid'])?>" type="radio" name="equip" value="<?=h($equipdata['itemid'])?>"> <?=h($equipdata['itemname']).' [0]'?>
-                      <?php else: ?>
-                      <input class="uk-radio <?=h($equipdata['itemid'])?>" type="radio" name="equip" value="<?=h($equipdata['itemid'])?>"> <?=h($equipdata['itemname']).' ['.h($equipdata['slot']).']'?>
-                      <?php endif; ?>
-                    </label>
-                  <?php endforeach; ?>
-                  </div>
+        </div>
+
+        <div id="option" uk-accordion>
+          <div>
+            <a class="uk-accordion-title uk-text-small" href="#">オプション</a>
+            <div class="uk-accordion-content">
+              <div class="catehead uk-heading-bullet">部位</div>
+              <div id="position" class="uk-flex uk-flex-wrap uk-margin-small-left">
+                <?php foreach ($equip_position as $position): ?>
+                  <label><input class="uk-checkbox" type="checkbox" name="position[]" value="<?=h($position)?>"> <?=h($position)?></label>
+                <?php endforeach; ?>
+              </div>
+              <!--<div>装備可能職業</div>
+              <div id="equippable_jobs" class="uk-flex uk-flex-wrap">
+                <label><input class="uk-checkbox" type="checkbox"> AB</label>
+              </div>-->
+            </div>
+          </div>
+        </div>
+
+        <div id="allofequip" uk-accordion>
+          <ul uk-accordion="multiple: true">
+            <div>
+              <a class="uk-accordion-title uk-text-small" href="#">すべての装備から選ぶ</a>
+              <div class="uk-accordion-content">
+                <div id="equip_search" class="uk-search uk-search-default uk-margin-left">
+                  <span uk-search-icon></span>
+                  <input id="equip_searchbox" class="uk-search-input" type="search" placeholder="装備名を入力">
+                </div>
+                <div id="equip_result" class="uk-flex uk-flex-wrap">
+                <?php foreach ($equip as $equipdata): ?>
+                  <label style="display:none;">
+                    <span style="display:none;"><?=h($equipdata['reading'])?></span>
+                    <?php if($equipdata['slot'] == NULL): ?>
+                    <input class="uk-radio <?=h($equipdata['itemid'])?>" type="radio" name="equip" value="<?=h($equipdata['itemid'])?>"> <?=h($equipdata['itemname']).' [0]'?>
+                    <?php else: ?>
+                    <input class="uk-radio <?=h($equipdata['itemid'])?>" type="radio" name="equip" value="<?=h($equipdata['itemid'])?>"> <?=h($equipdata['itemname']).' ['.h($equipdata['slot']).']'?>
+                    <?php endif; ?>
+                  </label>
+                <?php endforeach; ?>
                 </div>
               </div>
-          </div>
-          <div class="searchbutton">
-            <button class="ajax uk-button uk-button-primary uk-button-large" type="button">検索</button>
-          </div>
+            </div>
+        </div>
+
+        <div class="searchbutton">
+          <button class="ajax uk-button uk-button-primary uk-button-large" type="button">検索</button>
+        </div>
       <hr>
         <div id="result">
 
