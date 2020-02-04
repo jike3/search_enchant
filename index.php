@@ -106,6 +106,7 @@
               <label<?php if ($enchant['effect'] != NULL):?><?=' title="'.h($enchant['effect']).'"'?><?php endif; ?>>
                 <span style="display:none;"><?=h($enchant['reading'])?></span>
                 <input class="uk-radio <?=h($enchant['enchant_id'])?>" type="radio" name="enchant" value="<?=h($enchant['enchant_name'])?>"> <?=h($enchant['enchant_name'])?>
+              </label>
             <?php endforeach; ?>
           </div>
         </div>
