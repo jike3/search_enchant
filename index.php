@@ -10,7 +10,7 @@
       ]
     );
 
-    # エンチャントの表を作るために id・名前・よみがな・効果を取得する 通常 -> 特殊で名前昇順に並べる
+    # エンチャントの表を作るために id・名前・よみがな・効果を取得する 通常 -> 特殊でよみがな昇順に並べる
     $enchants = $pdo->query('
       SELECT
         rodb_enchants.enchant_id,
@@ -25,9 +25,9 @@
       ON
         rodb_enchants.enchant_id = rodb_itemname.itemid
       ORDER BY
-        special, enchant_name
+        special, rodb_enchants.reading
     ')->fetchAll();
-    
+
     # 装備一覧（スロット数付き）のための id・名前・よみがな・スロット
     $equip = $pdo->query('
       SELECT
@@ -106,6 +106,7 @@
               <label<?php if ($enchant['effect'] != NULL):?><?=' title="'.h($enchant['effect']).'"'?><?php endif; ?>>
                 <span style="display:none;"><?=h($enchant['reading'])?></span>
                 <input class="uk-radio <?=h($enchant['enchant_id'])?>" type="radio" name="enchant" value="<?=h($enchant['enchant_name'])?>"> <?=h($enchant['enchant_name'])?>
+              </label>
             <?php endforeach; ?>
           </div>
         </div>
